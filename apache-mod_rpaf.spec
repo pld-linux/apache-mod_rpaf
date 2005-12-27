@@ -12,7 +12,6 @@ Source0:	http://stderr.net/apache/rpaf/download/mod_%{mod_name}-%{version}.tar.g
 Source1:	%{name}.conf
 URL:		http://stderr.net/apache/rpaf/
 BuildRequires:	apache-devel >=  2.0.36
-Requires:	apache >= 2.0.36
 Requires:	apache(modules-api) = %apache_modules_api
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -69,4 +68,4 @@ fi
 %defattr(644,root,root,755)
 %doc README CHANGES test.pl
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf/*_mod_%{mod_name}.conf
-%attr(755,root,root) %{_pkglibdir}/*
+%attr(755,root,root) %{_pkglibdir}/*.so
