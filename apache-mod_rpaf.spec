@@ -4,14 +4,15 @@ Summary:	Reverse proxy add forward module for Apache2
 Summary(pl):	Modu³ Apache'a 2 dodaj±cy przekazywanie dla odwrotnych proxy
 Name:		apache-mod_%{mod_name}
 Version:	0.5
-Release:	0.3
+Release:	1
 License:	Apache
 Group:		Networking/Daemons
 Source0:	http://stderr.net/apache/rpaf/download/mod_%{mod_name}-%{version}.tar.gz
 # Source0-md5:	471fb059d6223a394f319b7c8ab45c4d
 Source1:	%{name}.conf
 URL:		http://stderr.net/apache/rpaf/
-BuildRequires:	apache-devel >=  2.0.36
+BuildRequires:	apache-devel >= 2.0.36
+BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	apache(modules-api) = %apache_modules_api
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -53,15 +54,11 @@ install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf/99_mod_%{mod_name}.c
 rm -rf $RPM_BUILD_ROOT
 
 %post
-if [ -f /var/lock/subsys/httpd ]; then
-	/etc/rc.d/init.d/httpd restart 1>&2
-fi
+%service -q httpd restart
 
 %postun
 if [ "$1" = "0" ]; then
-	if [ -f /var/lock/subsys/httpd ]; then
-		/etc/rc.d/init.d/httpd restart 1>&2
-	fi
+	%service -q httpd restart
 fi
 
 %files
