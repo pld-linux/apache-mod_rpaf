@@ -4,12 +4,13 @@ Summary:	Reverse proxy add forward module for Apache2
 Summary(pl.UTF-8):	Moduł Apache'a 2 dodający przekazywanie dla odwrotnych proxy
 Name:		apache-mod_%{mod_name}
 Version:	0.5
-Release:	3
+Release:	4
 License:	Apache
 Group:		Networking/Daemons
 Source0:	http://stderr.net/apache/rpaf/download/mod_%{mod_name}-%{version}.tar.gz
 # Source0-md5:	471fb059d6223a394f319b7c8ab45c4d
 Source1:	%{name}.conf
+Patch0:		mod_rpaf_degtine.patch
 URL:		http://stderr.net/apache/rpaf/
 BuildRequires:	apache-devel >= 2.0.36
 BuildRequires:	rpmbuild(macros) >= 1.268
@@ -41,6 +42,7 @@ począwszy od wersji 2.0.36.
 
 %prep
 %setup -q -n mod_%{mod_name}-%{version}
+%patch0 -p1
 mv -f mod_%{mod_name}{-2.0,}.c
 
 %build
