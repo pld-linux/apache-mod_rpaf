@@ -6,7 +6,7 @@ Name:		apache-mod_%{mod_name}
 Version:	0.5
 Release:	4
 License:	Apache
-Group:		Networking/Daemons
+Group:		Networking/Daemons/HTTP
 Source0:	http://stderr.net/apache/rpaf/download/mod_%{mod_name}-%{version}.tar.gz
 # Source0-md5:	471fb059d6223a394f319b7c8ab45c4d
 Source1:	%{name}.conf
