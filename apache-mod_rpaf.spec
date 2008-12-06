@@ -12,14 +12,14 @@ Source0:	http://stderr.net/apache/rpaf/download/mod_%{mod_name}-%{version}.tar.g
 Source1:	%{name}.conf
 Patch0:		mod_rpaf_degtine.patch
 URL:		http://stderr.net/apache/rpaf/
-BuildRequires:	apache-devel >= 2.2.10
+BuildRequires:	apache-devel >= 2.2
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	apache(modules-api) = %apache_modules_api
 Provides:	apache(mod_rpaf)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_pkglibdir	%(%{apxs} -q LIBEXECDIR 2>/dev/null)
-%define		_sysconfdir	%(%{apxs} -q SYSCONFDIR 2>/dev/null)
+%define		_sysconfdir	%(%{apxs} -q SYSCONFDIR 2>/dev/null)/conf.d
 
 %description
 rpaf is for backend Apache servers what mod_proxy_add_forward is for
@@ -50,9 +50,9 @@ mv -f mod_%{mod_name}{-2.0,}.c
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{_sysconfdir}/conf.d}
+install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{_sysconfdir}}
 install .libs/mod_rpaf.so $RPM_BUILD_ROOT%{_pkglibdir}/mod_%{mod_name}.so
-install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/conf.d/99_mod_%{mod_name}.conf
+install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/99_mod_%{mod_name}.conf
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -68,5 +68,5 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc README CHANGES
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/conf.d/*_mod_%{mod_name}.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/*_mod_%{mod_name}.conf
 %attr(755,root,root) %{_pkglibdir}/*.so
