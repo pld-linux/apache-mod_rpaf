@@ -15,6 +15,7 @@ URL:		http://stderr.net/apache/rpaf/
 BuildRequires:	apache-devel >= 2.2
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	apache(modules-api) = %apache_modules_api
+Conflicts:	apache(mod_extract_forwarded)
 Provides:	apache(mod_rpaf)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
