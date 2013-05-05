@@ -1,16 +1,17 @@
 %define		mod_name	rpaf
-%define 	apxs		%{_sbindir}/apxs
+%define		apxs		%{_sbindir}/apxs
 Summary:	Reverse proxy add forward module for Apache2
 Summary(pl.UTF-8):	Moduł Apache'a 2 dodający przekazywanie dla odwrotnych proxy
 Name:		apache-mod_%{mod_name}
 Version:	0.6
-Release:	2
+Release:	3
 License:	Apache
 Group:		Networking/Daemons/HTTP
 Source0:	http://stderr.net/apache/rpaf/download/mod_%{mod_name}-%{version}.tar.gz
 # Source0-md5:	ba2b89274e1dd4c0f96f8d034fa305b1
 Source1:	%{name}.conf
 Patch0:		mod_rpaf_degtine.patch
+Patch1:		apache-mod_rpaf-apache24.patch
 URL:		http://stderr.net/apache/rpaf/
 BuildRequires:	apache-devel >= 2.2
 BuildRequires:	rpmbuild(macros) >= 1.268
@@ -45,6 +46,7 @@ począwszy od wersji 2.0.36.
 %setup -q -n mod_%{mod_name}-%{version}
 %patch0 -p1
 mv -f mod_%{mod_name}{-2.0,}.c
+%patch1 -p1
 
 %build
 %{apxs} -S CC="%{__cc}" -c -n mod_%{mod_name}.o mod_%{mod_name}.c
