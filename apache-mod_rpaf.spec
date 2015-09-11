@@ -10,6 +10,7 @@ Group:		Networking/Daemons/HTTP
 Source0:	https://github.com/gnif/mod_rpaf/archive/v%{version}/mod_%{mod_name}-%{version}.tar.gz
 # Source0-md5:	8fbd9ee19f8ea4e25ab8414685276105
 Source1:	%{name}.conf
+Patch0:		0.6-compat.patch
 URL:		https://github.com/gnif/mod_rpaf/
 BuildRequires:	apache-devel >= 2.2
 BuildRequires:	rpmbuild(macros) >= 1.268
@@ -31,6 +32,7 @@ mod_proxy_add_forward jest dla frontendowych.
 
 %prep
 %setup -q -n mod_%{mod_name}-%{version}
+%patch0 -p1
 
 %build
 %{apxs} -S CC="--tag=CC %{__cc}" -c -n mod_%{mod_name}.o mod_%{mod_name}.c
