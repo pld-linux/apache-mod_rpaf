@@ -1,6 +1,6 @@
---- mod_rpaf-0.8.4/mod_rpaf.c~	2015-09-11 16:21:34.000000000 +0300
-+++ mod_rpaf-0.8.4/mod_rpaf.c	2015-09-11 16:21:40.142295508 +0300
-@@ -420,6 +420,32 @@
+--- mod_rpaf-0.8.4/mod_rpaf.c	2015-09-11 16:21:40.142295508 +0300
++++ mod_rpaf-0.8.4/mod_rpaf.c	2015-09-11 16:23:59.176130314 +0300
+@@ -420,6 +420,39 @@
                   RSRC_CONF,
                   "Which header to look for when trying to find the real ip of the client in a proxy setup"
                   ),
@@ -29,6 +29,13 @@
 +                 NULL,
 +                 RSRC_CONF,
 +                 "Let mod_rpaf set the hostname from the X-Host header and update vhosts"
++                 ),
++    AP_INIT_TAKE1(
++                 "RPAFheader",
++                 rpaf_set_headername,
++                 NULL,
++                 RSRC_CONF,
++                 "Which header to look for when trying to find the real ip of the client in a proxy setup"
 +                 ),
      { NULL }
  };
