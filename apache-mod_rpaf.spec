@@ -35,7 +35,7 @@ mod_proxy_add_forward jest dla frontendowych.
 %patch0 -p1
 
 %build
-%{apxs} -S CC="--tag=CC %{__cc}" -c -n mod_%{mod_name}.o mod_%{mod_name}.c
+%{apxs} -S CC="%{__cc}" -c -n mod_%{mod_name}.o mod_%{mod_name}.c
 
 %install
 rm -rf $RPM_BUILD_ROOT
