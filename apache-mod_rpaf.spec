@@ -1,10 +1,13 @@
+# TODO
+# - broken: https://github.com/gnif/mod_rpaf/issues/27
+
 %define		mod_name	rpaf
 %define		apxs		%{_sbindir}/apxs
 Summary:	Reverse proxy add forward module for Apache
 Summary(pl.UTF-8):	Moduł Apache'a 2 dodający przekazywanie dla odwrotnych proxy
 Name:		apache-mod_%{mod_name}
 Version:	0.8.4
-Release:	1
+Release:	0.1
 License:	Apache v2.0
 Group:		Networking/Daemons/HTTP
 Source0:	https://github.com/gnif/mod_rpaf/archive/v%{version}/mod_%{mod_name}-%{version}.tar.gz
