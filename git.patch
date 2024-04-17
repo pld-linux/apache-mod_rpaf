@@ -1,0 +1,102 @@
+commit a4b3e41e5fb845e0804ff6a5a4e94b5b0631b6b7
+Merge: 319268f e939025
+Author: Geoffrey McRae <gnif@users.noreply.github.com>
+Date:   Tue Dec 20 14:19:54 2016 +1100
+
+    Merge pull request #46 from criecm/stable
+    
+    Fix warning with clang
+
+commit e93902533dd89ba6c77cea90e4e2c7d762650126
+Author: Geoffroy Desvernay <dgeo@centrale-marseille.fr>
+Date:   Mon Dec 12 10:01:14 2016 +0100
+
+    Fix warning with clang
+    
+    Fix this warning on FreeBSD 11 (clang cc by default)
+    ./apxs.sh -c -n mod_rpaf.so mod_rpaf.c
+    /usr/local/share/apr/build-1/libtool --silent --mode=compile cc -prefer-pic -O2 -pipe -I/usr/local/include -DLIBICONV_PLUG -fstack-protector -fno-strict-aliasing    -I/usr/local/include/apache24  -I/usr/local/include/apr-1   -I/usr/local/include/apr-1 -I/usr/local/include -I/usr/local/include/db5 -I/usr/include  -c -o mod_rpaf.lo mod_rpaf.c && touch mod_rpaf.slo
+    mod_rpaf.c:117:18: warning: using the result of an assignment as a condition without parentheses [-Wparentheses]
+            if (mask = ap_strchr(ip, '/')) {
+                ~~~~~^~~~~~~~~~~~~~~~~~~~
+    mod_rpaf.c:117:18: note: place parentheses around the assignment to silence this warning
+            if (mask = ap_strchr(ip, '/')) {
+                     ^
+                (                        )
+    mod_rpaf.c:117:18: note: use '==' to turn this assignment into an equality comparison
+            if (mask = ap_strchr(ip, '/')) {
+                     ^
+                     ==
+    1 warning generated.
+
+diff --git a/mod_rpaf.c b/mod_rpaf.c
+index ee59765..519aece 100644
+--- a/mod_rpaf.c
++++ b/mod_rpaf.c
+@@ -114,7 +114,7 @@ static const char *rpaf_set_proxy_ip(cmd_parms *cmd, void *dummy, const char *pr
+ 
+     if (rpaf_looks_like_ip(proxy_ip)) {
+         ip = apr_pstrdup(cmd->temp_pool, proxy_ip);
+-        if (mask = ap_strchr(ip, '/')) {
++        if ((mask = ap_strchr(ip, '/'))) {
+             *mask++ = '\0';
+         }
+         sub = (apr_ipsubnet_t **)apr_array_push(cfg->proxy_ips);
+
+commit 6ecaee817d787db3c449d07282e1c440e5dccaeb
+Author: Ben Sjoberg <bensjoberg@gmail.com>
+Date:   Fri Dec 9 21:05:38 2016 -0600
+
+    Fix IPv6 client IPs when the proxy uses KeepAlive
+
+diff --git a/mod_rpaf.c b/mod_rpaf.c
+index ee59765..e4d8ae7 100644
+--- a/mod_rpaf.c
++++ b/mod_rpaf.c
+@@ -54,6 +54,7 @@ typedef struct {
+ 
+ typedef struct {
+     const char  *old_ip;
++    apr_sockaddr_t old_addr;
+     request_rec *r;
+ } rpaf_cleanup_rec;
+ 
+@@ -206,7 +207,7 @@ static int is_in_array(apr_sockaddr_t *remote_addr, apr_array_header_t *proxy_ip
+ static apr_status_t rpaf_cleanup(void *data) {
+     rpaf_cleanup_rec *rcr = (rpaf_cleanup_rec *)data;
+     rcr->r->DEF_IP = apr_pstrdup(rcr->r->connection->pool, rcr->old_ip);
+-    rcr->r->DEF_ADDR->sa.sin.sin_addr.s_addr = apr_inet_addr(rcr->r->DEF_IP);
++    memcpy(rcr->r->DEF_ADDR, &rcr->old_addr, sizeof(apr_sockaddr_t));
+     return APR_SUCCESS;
+ }
+ 
+@@ -311,6 +312,7 @@ static int rpaf_post_read_request(request_rec *r) {
+     rcr->r = r;
+     apr_pool_cleanup_register(r->pool, (void *)rcr, rpaf_cleanup, apr_pool_cleanup_null);
+     r->DEF_IP = apr_pstrdup(r->DEF_POOL, last_val);
++    memcpy(&rcr->old_addr, r->DEF_ADDR, sizeof(apr_sockaddr_t));
+ 
+     tmppool = r->DEF_ADDR->pool;
+     tmpport = r->DEF_ADDR->port;
+
+commit 5d3cd725c118c0b5f3a330b618d723cc99b77065
+Author: Geoffrey McRae <geoff@spacevs.com>
+Date:   Wed Oct 14 00:32:47 2015 +1100
+
+    Added '.' to the ipv6 character set for ipv4 in ipv6 addresses, fixes #19
+
+diff --git a/mod_rpaf.c b/mod_rpaf.c
+index 7425aa6..690f0f9 100644
+--- a/mod_rpaf.c
++++ b/mod_rpaf.c
+@@ -81,7 +81,7 @@ static void *rpaf_create_server_cfg(apr_pool_t *p, server_rec *s) {
+ /* quick check for ipv4/6 likelihood; similar to Apache2.4 mod_remoteip check */
+ static int rpaf_looks_like_ip(const char *ip) {
+     static const char ipv4_set[] = "0123456789./";
+-    static const char ipv6_set[] = "0123456789abcdef:/";
++    static const char ipv6_set[] = "0123456789abcdef:/.";
+ 
+     /* zero length value is not valid */
+     if (!*ip)
+
+

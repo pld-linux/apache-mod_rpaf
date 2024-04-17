@@ -8,13 +8,14 @@ Summary:	Reverse proxy add forward module for Apache
 Summary(pl.UTF-8):	Moduł Apache'a 2 dodający przekazywanie dla odwrotnych proxy
 Name:		apache-mod_%{mod_name}
 Version:	0.8.4
-Release:	2
+Release:	3
 License:	Apache v2.0
 Group:		Networking/Daemons/HTTP
 Source0:	https://github.com/gnif/mod_rpaf/archive/v%{version}/mod_%{mod_name}-%{version}.tar.gz
 # Source0-md5:	8fbd9ee19f8ea4e25ab8414685276105
 Source1:	%{name}.conf
-Patch0:		0.6-compat.patch
+Patch0:		git.patch
+Patch1:		0.6-compat.patch
 URL:		https://github.com/gnif/mod_rpaf/
 BuildRequires:	apache-devel >= 2.2
 BuildRequires:	rpmbuild(macros) >= 1.268
@@ -37,6 +38,7 @@ mod_proxy_add_forward jest dla frontendowych.
 %prep
 %setup -q -n mod_%{mod_name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 %{apxs} -S CC="%{__cc}" -c -n mod_%{mod_name}.o mod_%{mod_name}.c
